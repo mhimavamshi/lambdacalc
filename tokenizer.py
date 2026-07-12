@@ -17,13 +17,16 @@ class Token:
     def __repr__(self):
         return f"Token at {self.pos}: {self.ttype} type, '{self.value}' value"
 
-def tokenize(file):
+def read_file(file):
     try:
         with open(file) as fl:
             data = fl.read()
+        return data 
     except:
         return 
 
+
+def tokenize(data):
     tokens = []
     i = 0
 
