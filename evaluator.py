@@ -1,4 +1,5 @@
 from parser import NodeType
+from utils import debug_print
 
 class Evaluator:
     def __init__(self, strategy):
@@ -28,8 +29,11 @@ class Evaluator:
             return tree
 
     def reduce(self, tree):
+        i = 0
         while True:
             self.reductions = 0
             tree = self.evaluate(tree)
             if self.reductions == 0:
                 return tree  
+            i += 1
+            debug_print(f"at {i} pass: performed {self.reductions}")
