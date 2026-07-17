@@ -114,6 +114,16 @@ class Parser:
         token = self.advance()
         return token 
 
+
+RESET = "\033[0m"
+BLUE = "\033[94m"
+GREEN = "\033[92m"
+YELLOW = "\033[93m"
+MAGENTA = "\033[95m"
+CYAN = "\033[96m"
+GRAY = "\033[90m"
+
+
 def print_tree(node, prefix="", is_last=True):
     if node is None:
         return
@@ -121,11 +131,11 @@ def print_tree(node, prefix="", is_last=True):
     connector = "└── " if is_last else "├── "
 
     if node.nodetype == NodeType.VARIABLE:
-        label = f"Variable({node.value})"
+        label = f"{GREEN}Variable{RESET}({YELLOW}{node.value}{RESET})"
     elif node.nodetype == NodeType.LAMBDA:
-        label = f"Lambda({node.value})"
+        label = f"{BLUE}Lambda{RESET}({YELLOW}{node.value}{RESET})"
     elif node.nodetype == NodeType.APPLICATION:
-        label = "Application"
+        label = f"{MAGENTA}Application{RESET}"   
     else:
         label = str(node.nodetype)
 
