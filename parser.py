@@ -128,7 +128,7 @@ def print_tree(node, prefix="", is_last=True):
     if node is None:
         return
 
-    connector = "└── " if is_last else "├── "
+    connector = f"{GRAY}{'└── ' if is_last else '├── '}{RESET}"
 
     if node.nodetype == NodeType.VARIABLE:
         label = f"{GREEN}Variable{RESET}({YELLOW}{node.value}{RESET})"
@@ -147,7 +147,8 @@ def print_tree(node, prefix="", is_last=True):
     if node.right is not None:
         children.append(node.right)
 
-    next_prefix = prefix + ("    " if is_last else "│   ")
+    prefix = prefix.replace("│", f"{GRAY}│{RESET}")   
+    next_prefix = prefix + ("    " if is_last else f"{GRAY}│{RESET}   ")
 
     for i, child in enumerate(children):
         print_tree(child, next_prefix, i == len(children) - 1)
