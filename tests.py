@@ -30,15 +30,42 @@ def test_expression(name, source):
     print()
 
 def test_expressions():
+
     tests = [
-        ("identity", r"(\x.x) y"),                    # -> y
-        ("identity application", r"(\x.x) (a b)"),   # -> (a b)
-        ("constant", r"(\x.\y.x) a b"),              # -> a
-        ("second", r"(\x.\y.y) a b"),                # -> b
-        ("duplicate", r"(\x.x x) y"),                # -> y y
-        ("ignore arg", r"(\x.a) b"),                 # -> a
-        ("nested lambda", r"(\x.\y.x) y"),                 # -> \y.y 
+        ("identity", r"(\x.x) y"),                          # -> y
+        ("identity application", r"(\x.x) (a b)"),         # -> (a b)
+        ("constant", r"(\x.\y.x) a b"),                    # -> a
+        ("second", r"(\x.\y.y) a b"),                      # -> b
+        ("duplicate", r"(\x.x x) y"),                      # -> y y
+        ("ignore arg", r"(\x.a) b"),                       # -> a
+
+        # Capture / alpha conversion
+        ("capture avoidance", r"(\x.\y.x) y"),             # -> \y'.y
+        ("capture avoidance 2", r"(\x.\y.y x) y"),         # -> \y'.y' y
+
+        # Shadowing
+        ("shadow inner", r"(\x.\x.x) z"),                  # -> \x.x
+        ("shadow outer", r"(\x.\x.x x) z"),                # -> \x.x x
+        ("outer reference", r"(\x.\y.x y) z"),             # -> \y.z y
+        ("inner application", r"(\x.(\x.x) x) z"),         # -> z
+
+        # Nested applications
+        ("nested identity", r"(\x.x) ((\y.y) z)"),         # -> z
+        ("apply twice", r"(\f.\x.f (f x)) (\y.y) a"),      # -> a
+
+        # Free variables
+        ("free variable", r"(\x.x z) y"),                  # -> y z
+        ("free application", r"(\x.z x) y"),              # -> z y
+
+        # More shadowing
+        ("deep shadow", r"(\x.\x.\x.x) a"),                # -> \x.\x.x
+        ("deep outer", r"(\x.\y.\z.x) a"),                 # -> \y.\z.a
+
+        # Combinations
+        ("self application", r"(\x.x x) (\y.y)"),          # -> (\y.y) (\y.y)
+        ("nested constant", r"(\a.(\b.a)) x"),             # -> \b.x
     ]
+
 
     for name, source in tests:
         test_expression(name, source)
