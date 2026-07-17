@@ -1,19 +1,62 @@
-from parser import NodeType, ApplicationNode, LambdaNode
+from parser import NodeType, ApplicationNode, LambdaNode, print_tree
 from utils import debug_print
 
 class Evaluator:
     def __init__(self, strategy):
         self.strategy = strategy
         self.reductions = 0
+        self._active_lambda_scopes = {}
+        self._mono_id = -1
 
-    def alpha_convert(self, tree):
-        # it goes through the tree
-        # keeps track of variables in outer scope
-        # or scopes
-        # if its newly defined again
-        # we can have metadata saying they're new ones bound to new lambda, don't substitute
-        # or just encode that information in the re-naming
-        pass
+    def alpha_convert(self, node):
+        if node.nodetype == NodeType.APPLICATION:
+            self.alpha_convert(node.left)
+            self.alpha_convert(node.right)
+
+        if node.nodetype == NodeType.LAMBDA:
+           scope_id = self.push_scope(node)
+           self.alpha_convert(node.right)
+           self.pop_scope(node)
+           self.rename_node(node, scope_id)
+
+        if node.nodetype == NodeType.VARIABLE:
+            scope_id = self.get_scope_id(node.value)
+            if scope_id is None:
+                return 
+            self.rename_node(node, scope_id)
+
+    def rename_node(self, node, scope_id):
+        node.value = f"{node.value}#{scope_id}"
+
+    def mono(self):
+        self._mono_id += 1
+        return self._mono_id
+
+    def push_scope(self, node):
+        key = node.value 
+        new_id = self.mono()
+        if key in self._active_lambda_scopes:
+            stack = self._active_lambda_scopes[key] 
+            stack.append(new_id) 
+        else:
+            self._active_lambda_scopes[key] = [new_id]
+        return new_id 
+           
+
+    def pop_scope(self, node):
+        key = node.value
+        if key in self._active_lambda_scopes:
+            stack = self._active_lambda_scopes[key]
+            last_id = stack.pop()
+            if not stack:
+                del self._active_lambda_scopes[key]
+            return
+
+    def get_scope_id(self, value):
+        if value in self._active_lambda_scopes:
+            stack = self._active_lambda_scopes[value]
+            return stack[-1] 
+        return None
 
     def substitute(self, node, replacement, variable):
         # lambda is simply a variable: \x.x 
@@ -54,6 +97,8 @@ class Evaluator:
             return tree
 
     def reduce(self, tree):
+        self.alpha_convert(tree)
+        print_tree(tree) 
         i = 0
         while True:
             self.reductions = 0
