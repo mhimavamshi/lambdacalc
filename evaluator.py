@@ -98,6 +98,8 @@ class Evaluator:
 
     def reduce(self, tree):
         self.alpha_convert(tree)
+        print("=====") 
+        print("alpha converted tree:")
         print_tree(tree) 
         i = 0
         while True:
@@ -106,4 +108,6 @@ class Evaluator:
             if self.reductions == 0:
                 return tree  
             i += 1
-            debug_print(f"at {i} pass: performed {self.reductions}")
+            print("=====")
+            print(f"at #{i} pass: performed {self.reductions}")
+            print_tree(tree)
