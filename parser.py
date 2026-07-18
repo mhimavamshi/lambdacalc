@@ -30,9 +30,7 @@ class LambdaNode(Node):
         super().__init__(NodeType.LAMBDA, value, None, right)
 
 class Parser:
-    def __init__(self, tokens):
-        self.tokens = tokens
-        self.curr = 0
+    def __init__(self):
         self.atom_indicators = {TokenType.IDENTIFIER, TokenType.LPAREN}
 
     def is_atom(self, token):
@@ -44,19 +42,19 @@ class Parser:
     # just a short function name/alias
     def parse(self):
         tree = self.parse_expression()
-        if self.peek() is not None:
-            raise Exception(f"Unexpected token {self.peek()}")
         return tree
 
     def parse_expression(self):
         token = self.peek()
+        if token is None:
+            return 
         if token.ttype == TokenType.LAMBDA:
             return self.parse_lambda()
         elif self.is_atom(token):
             return self.parse_application()
         else:
             # nice error
-            pass 
+            raise Exception(f"Parse Expression recieved: {token}") 
 
     def parse_lambda(self):
         self.expect(TokenType.LAMBDA)
@@ -113,6 +111,40 @@ class Parser:
             raise Exception(f"Expected {ttype}, got {token}")
         token = self.advance()
         return token 
+
+    def parse_definition(self):
+        name = self.expect(TokenType.IDENTIFIER)
+        self.expect(TokenType.ASSIGNMENT)
+        body = self.parse()
+        self.expect(TokenType.COMMA)
+        return name.value, body
+
+    def parse_definitions(self):
+        self.expect(TokenType.DEFINITION_BEGIN) 
+        while True:
+            if self.peek() is None or self.peek().ttype == TokenType.DEFINITION_END:
+               break 
+            name, body = self.parse_definition()
+            self.definitions[name] = body 
+        self.expect(TokenType.DEFINITION_END)
+
+    def reset(self):
+        self.tokens = []
+        self.curr = 0
+        self.definitions = {}
+
+    def process(self, tokens):
+        self.reset()
+
+        if len(tokens) == 0:
+            return {}, None 
+
+        self.tokens = tokens 
+
+        if self.peek().ttype == TokenType.DEFINITION_BEGIN:
+            self.parse_definitions()
+        tree = self.parse()
+        return self.definitions, tree
 
 
 RESET = "\033[0m"

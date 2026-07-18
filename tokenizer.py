@@ -8,6 +8,11 @@ class TokenType(Enum):
     PERIOD = auto()
     IDENTIFIER = auto()
 
+    DEFINITION_BEGIN = auto()
+    DEFINITION_END = auto()
+    ASSIGNMENT = auto()
+    COMMA = auto()
+
 class Token:
     def __init__(self, ttype, value, pos):
         self.ttype = ttype
@@ -31,8 +36,8 @@ def tokenize(data):
     i = 0
 
     while i < len(data):
+       
         ch = data[i]
-        debug_print(f"at {i}: {data[i]}")
 
         if ch.isspace():
             i += 1
@@ -47,6 +52,14 @@ def tokenize(data):
                 tokens.append(Token(TokenType.LAMBDA, ch, i))
             case ".":
                 tokens.append(Token(TokenType.PERIOD, ch, i))
+            case "{":
+                tokens.append(Token(TokenType.DEFINITION_BEGIN, ch, i))
+            case "}":
+                tokens.append(Token(TokenType.DEFINITION_END, ch, i))
+            case "=":
+                tokens.append(Token(TokenType.ASSIGNMENT, ch, i))
+            case ",":
+                tokens.append(Token(TokenType.COMMA, ch, i))
             case _:
                 if not ch.isalpha():
                     raise RuntimeError(f"Invalid character at position {i}: {ch}")

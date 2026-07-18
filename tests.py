@@ -70,10 +70,26 @@ def test_expressions():
     for name, source in tests:
         test_expression(name, source)
 
+def test_definition(name, source):
+    tokens = tokenizer.tokenize(source)
+    definitions, program = Parser().process(tokens)
+    for name, body in definitions.items():
+        print("=====")
+        print(name)
+        print_tree(body)
+
+
+def test_definitions():
+    tests = [
+        ("id", r"{id = \x.x, misdirect = \x.y, }")
+    ]
+
+    for name, source in tests:
+        test_definition(name, source)
 
 def main():
-    test_expressions()
-
+    # test_expressions()
+    test_definitions()
 
 if __name__ == "__main__":
     main()
