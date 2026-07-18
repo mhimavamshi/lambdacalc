@@ -17,8 +17,8 @@ def test_definition(name, source):
     print("=====")
     print_tree(program)
 
-    eval = Evaluator("strong")
-    reduced_tree = eval.run(definitions, program)
+    eval = Evaluator(definitions)
+    reduced_tree = eval.run(program)
 
     print("Evaluated tree")
     print("=====")
@@ -63,12 +63,12 @@ def test_definitions():
     #
 
     tests = [
-        # Two independent definitions
-        ("two defs", r"{id = \x.x, const = \x.\y.x, } const"),
-
-        # Definition application
-        ("identity call", r"{id = \x.x, } id z"),
-
+        # # Two independent definitions
+        # ("two defs", r"{id = \x.x, const = \x.\y.x, } const"),
+        #
+        # # Definition application
+        # ("identity call", r"{id = \x.x, } id z"),
+        #
         # Multiple uses of same definition
         ("reuse", r"{id = \x.x, } id id"),
 
@@ -79,11 +79,11 @@ def test_definitions():
     #     ("nested application",
     #     r"{twice = \f.\x.f (f x), four = twice twice, id = \x.x, } four id"),
     #
-    #     # Three-level expansion
-    #     ("deep chain",
-    #     r"{a = b, b = c, c = \x.x, } a"),
-    #
-    #     # Application inside definition
+        # Three-level expansion
+        ("deep chain",
+        r"{a = b, b = c, c = \x.x, } a"),
+
+        #     # Application inside definition
     #     ("application rhs",
     #     r"{foo = (\x.x) (\y.y), } foo"),
     #
@@ -109,7 +109,8 @@ def test_definitions():
 
          # Nested application expansion
          ("complex application",
-         r"{foo = a b, bar = foo c, } bar"),
+         r"{foo = a b, bar = foo foo c, } bar"),
+
 
     #     # Large composed example
     #     ("compose",

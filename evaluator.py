@@ -3,11 +3,16 @@ from copy import deepcopy
 from utils import debug_print
 
 class Evaluator:
-    def __init__(self, strategy):
+    def __init__(self, definitions, strategy="strong"):
         self.strategy = strategy
+        self.definitions = definitions
+        self.init_definitions()
         self.reductions = 0
         self._active_lambda_scopes = {}
         self._mono_id = -1
+
+    def init_definitions(self):
+        self.generate_metadata()
 
     def alpha_convert(self, node):
         if node.nodetype == NodeType.APPLICATION:
@@ -113,6 +118,28 @@ class Evaluator:
             print(f"at #{i} pass: performed {self.reductions}")
             print_tree(tree)
 
+    def find_references(self, node, references):
+        if node.nodetype == NodeType.VARIABLE:
+            if node.value in self.definitions:
+                references[node.value] = references.get(node.value, 0) + 1
+
+        if node.nodetype == NodeType.LAMBDA:
+            self.find_references(node.right, references)
+
+        if node.nodetype == NodeType.APPLICATION:
+            self.find_references(node.left, references)
+            self.find_references(node.right, references)
+
+    def generate_metadata(self):
+        self.metadata = {}
+
+        for definition, body in self.definitions.items():
+            references = {}
+            self.find_references(body, references)
+            self.metadata[definition] = references
+        
+        debug_print(f"metadata generated: {self.metadata}")
+
     def expansion_pass(self, program):
 
         if program.nodetype == NodeType.VARIABLE:
@@ -155,9 +182,7 @@ class Evaluator:
     # which involves clearing out the metadata, cache, rebuilding graph, and detecting new cycles 
 
 
-    def run(self, definitions, program):
-        self.definitions = definitions
-
+    def run(self, program):
         changed = True
         while changed: 
             program, changed = self.expansion_pass(program)
