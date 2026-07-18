@@ -73,15 +73,21 @@ def test_expressions():
 def test_definition(name, source):
     tokens = tokenizer.tokenize(source)
     definitions, program = Parser().process(tokens)
+    
+    print(name, ":")
+    print("Definitions")  
     for name, body in definitions.items():
         print("=====")
         print(name)
         print_tree(body)
-
+   
+    print("Program")
+    print("=====")
+    print_tree(program)
 
 def test_definitions():
     tests = [
-        ("id", r"{id = \x.x, misdirect = \x.y, }")
+        ("simple program", r"{id = \x.x, misdirect = \x.y, } id misdirect")
     ]
 
     for name, source in tests:
