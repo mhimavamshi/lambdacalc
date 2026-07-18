@@ -140,6 +140,21 @@ class Evaluator:
             right, right_changed = self.expansion_pass(program.right)
             return ApplicationNode(left, right), left_changed or right_changed
 
+    # Idea:
+    # Derive metadata from definitions: each definition mapped to its unique references
+    # sort it by the number of references
+    # you have a graph 
+    # in the graph check for cycles: have a nice error message showing the cycle 
+    # if not, you have a graph of definitions 
+    # during expansion, you can decide to go deeper or not if the number of references is not 0
+    # you can cache after first expansion for re-use  
+    # 
+    # WOULD BE VERY COOL IF IT IS MADE INCREMENTAL!!!
+    #
+    # but for now, expose add_definition, remove_definition, clear_all that all do reset()
+    # which involves clearing out the metadata, cache, rebuilding graph, and detecting new cycles 
+
+
     def run(self, definitions, program):
         self.definitions = definitions
 
