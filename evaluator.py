@@ -1,4 +1,5 @@
 from parser import NodeType, ApplicationNode, LambdaNode, print_tree
+from copy import deepcopy
 from utils import debug_print
 
 class Evaluator:
@@ -111,3 +112,44 @@ class Evaluator:
             print("=====")
             print(f"at #{i} pass: performed {self.reductions}")
             print_tree(tree)
+
+    def expansion_pass(self, program):
+
+        if program.nodetype == NodeType.VARIABLE:
+            # also handle mutually defining functions case!
+            # a = b and b = a
+            # that'll keep expanding each other and never stop
+            # detect using set etc.,
+            
+            if program.value in self.definitions:
+                # future optimization: in case of definitions which depend on other definitions
+                # for eg. four = twice twice and twice is a function
+                # we can have a check here, before returning and do a expansion pass on it
+                # then cache the body, saving any future expansion calls
+                return deepcopy(self.definitions[program.value]), True
+            
+            return program, False
+        
+
+        if program.nodetype == NodeType.LAMBDA:
+            body, changed = self.expansion_pass(program.right)
+            return LambdaNode(program.value, body), changed
+
+        if program.nodetype == NodeType.APPLICATION:
+            left, left_changed = self.expansion_pass(program.left)
+            right, right_changed = self.expansion_pass(program.right)
+            return ApplicationNode(left, right), left_changed or right_changed
+
+    def run(self, definitions, program):
+        self.definitions = definitions
+
+        changed = True
+        while changed: 
+            program, changed = self.expansion_pass(program)
+
+        print("=====")
+        print("after definition expansion")
+        print_tree(program)
+
+        return self.reduce(program)
+
