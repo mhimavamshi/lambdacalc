@@ -111,6 +111,7 @@ def test_definitions():
         #     ("compose",
         #     r"{id = \x.x, const = \x.\y.x, twice = \f.\x.f (f x), } twice id"),
         ("cyclic definitions", r"{a = b, b = a c, }"),
+        # interesting case: (((λf.λx.f (f x)) (λf.λx.f (f x))) (λx.λy.x)) a b
     ]
 
     for name, source in tests:
