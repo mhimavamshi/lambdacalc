@@ -49,31 +49,63 @@ def evaluate_pipeline(program):
 
 
 def define(args):
+    r"""
+    Define a function to be reused. for eg. ':def id = \x.x'
+    """
     source = "{ " + " ".join(args) + " , " + "}"
     debug_print(source)
     new_definition(source)
 
 
 def undefine(args):
+    """
+    Remove definition(s). for eg., ':undef id coolfun ...'
+    """
     for arg in args:
         remove_definition(arg)
 
 
 def cleardefines(args):
+    """
+    Clear all definitions.
+    """
     clear_definitions()
 
 
 # needs to serialize and deserialize AST nodes :)
 # maybe later
-def save():
+def save(args):
     pass
 
 
+def showdefines(args):
+    """
+    Prints all definitions that are currently defined.
+    """
+    for definition in parsed_definitions:
+        print(definition)
+
+
+def helpf(args=None):
+    """
+    Prints help for all commands if no arguments are given, else prints help for the commands mentioned in arguments.
+    """
+    if not args:
+        args = commands.keys()
+
+    for arg in args:
+        if arg in commands:
+            print(f":{arg}{commands[arg].__doc__}")
+    print()
+
+
 commands = {
-    "define": define,
-    "undefine": undefine,
-    "cleardefines": cleardefines,
+    "def": define,
+    "undef": undefine,
+    "cleardefs": cleardefines,
+    "showdefs": showdefines,
     "save": save,
+    "help": helpf,
 }
 
 
@@ -97,15 +129,15 @@ def prompt():
 
 
 def main():
+    helpf()
     while True:
         command = prompt()
         if is_quit(command):
             break
         try:
             execute_command(command)
-        except Exception as e:
+        except Exception as e:  # ideally we handle custom exceptions, like Cycle identified etc., but i am tired
             print(e)
-            break
 
 
 if __name__ == "__main__":
