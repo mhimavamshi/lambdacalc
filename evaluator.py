@@ -17,6 +17,18 @@ class Evaluator:
         self.detect_cycles()
         self.definition_cache = {}
 
+    def add_definition(self, definition):
+        self.definitions |= definition
+        self.init_definitions()
+
+    def remove_definition(self, definition):
+        del self.definitions[definition]
+        self.init_definitions()
+
+    def clear_definitions(self):
+        self.definitions = {}
+        self.init_definitions()
+
     def alpha_convert(self, node):
         if node.nodetype == NodeType.APPLICATION:
             self.alpha_convert(node.left)
