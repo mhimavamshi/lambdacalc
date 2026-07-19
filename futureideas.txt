@@ -1,0 +1,5 @@
+- incremental dependency graphs: we're re-building on any definition mutations, but make it incremental
+- reverse-edge invalidation: cache invalidation on new or removed or edited definitions
+- serialization: for persisting states 
+- pretty printers: print trees as flattened text again 
+- types: a big rabbit hole... let's leave it at that 
