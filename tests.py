@@ -2,17 +2,18 @@ import tokenizer
 from parser import Parser, print_tree
 from evaluator import Evaluator
 
+
 def test_definition(name, source):
     tokens = tokenizer.tokenize(source)
     definitions, program = Parser().process(tokens)
-    
+
     print(name, ":")
-    print("Definitions")  
+    print("Definitions")
     for name, body in definitions.items():
         print("=====")
         print(name)
         print_tree(body)
-   
+
     print("Program")
     print("=====")
     print_tree(program)
@@ -23,6 +24,7 @@ def test_definition(name, source):
     print("Evaluated tree")
     print("=====")
     print_tree(reduced_tree)
+
 
 def test_definitions():
 
@@ -71,50 +73,44 @@ def test_definitions():
         #
         # Multiple uses of same definition
         ("reuse", r"{id = \x.x, } id id"),
-
-    #     # Nested definitions
-    #     ("nested", r"{twice = \f.\x.f (f x), four = twice twice, } four"),
-    #
-    #     # Nested definition application
-    #     ("nested application",
-    #     r"{twice = \f.\x.f (f x), four = twice twice, id = \x.x, } four id"),
-    #
+        #     # Nested definitions
+        #     ("nested", r"{twice = \f.\x.f (f x), four = twice twice, } four"),
+        #
+        #     # Nested definition application
+        #     ("nested application",
+        #     r"{twice = \f.\x.f (f x), four = twice twice, id = \x.x, } four id"),
+        #
         # Three-level expansion
-        ("deep chain",
-        r"{a = b, b = c, c = \x.x, } a"),
-
+        ("deep chain", r"{a = b, b = c, c = \x.x, } a"),
         #     # Application inside definition
-    #     ("application rhs",
-    #     r"{foo = (\x.x) (\y.y), } foo"),
-    #
-    #     # Definition referring to free variable
-    #     ("free variable",
-    #     r"{idz = \x.z, } idz"),
-    #
-    #     # Definition used inside lambda
-    #     ("inside lambda",
-    #     r"{id = \x.x, } \y.id y"),
-    #
-    #     # Definition used multiple places
-    #     ("multiple expansion",
-    #     r"{id = \x.x, } (id a) (id b)"),
-    #
-    #     # Definition shadows program variable
-    #     ("free program variable",
-    #     r"{id = \x.x, } (\id.id) y"),
-    #
-    #     # Definition expands to application
-    #     ("application expansion",
-    #     r"{foo = a b, } foo"),
-
-         # Nested application expansion
-         ("complex application",
-         r"{foo = a b, bar = foo foo c, } bar"),
-
-
-    #     # Large composed example
-    #     ("compose",
-    #     r"{id = \x.x, const = \x.\y.x, twice = \f.\x.f (f x), } twice id"),
+        #     ("application rhs",
+        #     r"{foo = (\x.x) (\y.y), } foo"),
+        #
+        #     # Definition referring to free variable
+        #     ("free variable",
+        #     r"{idz = \x.z, } idz"),
+        #
+        #     # Definition used inside lambda
+        #     ("inside lambda",
+        #     r"{id = \x.x, } \y.id y"),
+        #
+        #     # Definition used multiple places
+        #     ("multiple expansion",
+        #     r"{id = \x.x, } (id a) (id b)"),
+        #
+        #     # Definition shadows program variable
+        #     ("free program variable",
+        #     r"{id = \x.x, } (\id.id) y"),
+        #
+        #     # Definition expands to application
+        #     ("application expansion",
+        #     r"{foo = a b, } foo"),
+        # Nested application expansion
+        ("complex application", r"{foo = a b, bar = foo foo c, } bar bar"),
+        #     # Large composed example
+        #     ("compose",
+        #     r"{id = \x.x, const = \x.\y.x, twice = \f.\x.f (f x), } twice id"),
+        # ("cyclic definitions", r"{a = b, b = a c, }"),
     ]
 
     for name, source in tests:
@@ -122,9 +118,11 @@ def test_definitions():
         test_definition(name, source)
         print("-------")
 
+
 def main():
     # test_expressions()
     test_definitions()
+
 
 if __name__ == "__main__":
     main()

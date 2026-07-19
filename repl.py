@@ -3,6 +3,7 @@ from tokenizer import tokenize
 from parser import Parser, print_tree 
 from evaluator import Evaluator
 
+parser = Parser()
 
 COMMANDPREFIX = ":"
 
@@ -10,14 +11,18 @@ commands = {
 
 }
 
+definitions = {
+
+}
+
 def evaluate_pipeline(program):
     tokens = tokenize(program) 
-    tree = Parser(tokens).parse()
+    parsed_definitions, tree = parser.process(tokens)
     print()
     print("Immediately parsed tree:")
     print_tree(tree)
     print()
-    final_tree = Evaluator("strong").reduce(tree)
+    final_tree = Evaluator(parsed_definitions).run(tree)
     print()
     print("=====") 
     print("reduced tree: ")
