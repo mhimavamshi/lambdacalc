@@ -110,7 +110,7 @@ def test_definitions():
         #     # Large composed example
         #     ("compose",
         #     r"{id = \x.x, const = \x.\y.x, twice = \f.\x.f (f x), } twice id"),
-        # ("cyclic definitions", r"{a = b, b = a c, }"),
+        ("cyclic definitions", r"{a = b, b = a c, }"),
     ]
 
     for name, source in tests:

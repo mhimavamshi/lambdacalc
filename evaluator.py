@@ -144,24 +144,33 @@ class Evaluator:
 
         debug_print(f"metadata generated: {self.metadata}")
 
-    def _detect_cycles_backend(self, start, visited=None):
+    def _detect_cycles_backend(self, start, global_visited, visited=None):
         if visited is None:
-            visited = set()
+            visited = []
+
+        if start in global_visited:
+            return
 
         if start in visited:
-            raise Exception(f"Cycle detected in definitions: {' -> '.join(visited)}")
+            raise Exception(
+                f"Cycle detected in definitions: {' -> '.join(visited + [start])}"
+            )
 
-        visited.add(start)
+        visited.append(start)
         references = self.metadata[start]
         for reference in references.keys():
-            self._detect_cycles_backend(reference, visited)
-        visited.remove(start)
+            self._detect_cycles_backend(reference, global_visited, visited)
+        visited.pop()
+        global_visited.add(start)
 
     def detect_cycles(self):
-        self.metadata = dict(
-            sorted(self.metadata.items(), key=lambda item: len(item[1]))
-        )
-        self._detect_cycles_backend(next(iter(self.metadata)))
+        # self.metadata = dict(
+        #     sorted(self.metadata.items(), key=lambda item: len(item[1]))
+        # )
+        global_visited = set()
+        for definition in self.definitions:
+            if definition not in global_visited:
+                self._detect_cycles_backend(definition, global_visited)
 
     def fetch_definition(self, definition):
 
