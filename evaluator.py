@@ -120,7 +120,7 @@ class Evaluator:
 
     def reduce(self, tree):
         self.alpha_convert(tree)
-        self._mono_id = 0  # reset for later conversions
+        self._mono_id = -1  # reset for later conversions
         print("=====")
         print("alpha converted tree:")
         print_tree(tree)
@@ -134,6 +134,11 @@ class Evaluator:
             print("=====")
             print(f"at #{i} pass: performed {self.reductions}")
             print_tree(tree)
+            # for now, brute force
+            # but have a check to see if alpha conversion is needed and do it lazily
+            # and only when needed
+            self.alpha_convert(tree)
+            self._mono_id = -1  # reset for later conversions
 
     def find_references(self, node, references):
         if node.nodetype == NodeType.VARIABLE:
