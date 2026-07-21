@@ -47,6 +47,8 @@ class Evaluator:
             self.rename_node(node, scope_id)
 
     def rename_node(self, node, scope_id):
+        if (i := node.value.find("#")) != -1:
+            node.value = node.value[:i]
         node.value = f"{node.value}#{scope_id}"
 
     def mono(self):
