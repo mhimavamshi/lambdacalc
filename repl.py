@@ -138,6 +138,7 @@ def main():
             execute_command(command)
         except Exception as e:  # ideally we handle custom exceptions, like Cycle identified etc., but i am tired
             print(e)
+            break
 
 
 if __name__ == "__main__":

@@ -81,7 +81,7 @@ class Evaluator:
     def substitute(self, node, replacement, variable):
         # lambda is simply a variable: \x.x
         if node.nodetype == NodeType.VARIABLE:
-            return replacement if node.value == variable else node
+            return deepcopy(replacement) if node.value == variable else node
 
         # of course, alpha_convert is necessary
         # ignore, for now
@@ -120,6 +120,7 @@ class Evaluator:
 
     def reduce(self, tree):
         self.alpha_convert(tree)
+        self._mono_id = 0  # reset for later conversions
         print("=====")
         print("alpha converted tree:")
         print_tree(tree)
