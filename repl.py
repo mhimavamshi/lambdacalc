@@ -92,9 +92,10 @@ def serialize(node):
         return f"{left} {right}"
 
 
-# needs to serialize and deserialize AST nodes :)
-# maybe later
 def save(args):
+    """
+    Save the definitions to a file. eg., :save cool.lc or :save. If no file name is given, "definitions.lc" is the default
+    """
     file = "definitions.lc" if not args else args[0]
 
     lines = []
@@ -127,11 +128,14 @@ def helpf(args=None):
 
     for arg in args:
         if arg in commands:
-            print(f":{arg}{commands[arg].__doc__}")
+            print(f":{arg} - {commands[arg].__doc__.strip()}\n")
     print()
 
 
 def load(args):
+    """
+    Load a file. eg :load cool.lc or :load. If no file is given, "definitions.lc" is the default file.
+    """
     file = "definitions.lc" if not args else args[0]
 
     with open(file) as fl:
