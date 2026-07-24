@@ -1,6 +1,6 @@
 import readline
 from tokenizer import tokenize
-from parser import Node, NodeType, Parser, print_tree
+from parser import NodeType, Parser, print_tree
 from evaluator import Evaluator
 from utils import debug_print
 
@@ -94,7 +94,7 @@ def serialize(node):
 
 def save(args):
     """
-    Save the definitions to a file. eg., :save cool.lc or :save. If no file name is given, "definitions.lc" is the default
+    Save the definitions to a file. eg., :save cool.lc or :save. "definitions.lc" is the default
     """
     file = "definitions.lc" if not args else args[0]
 
@@ -126,15 +126,15 @@ def helpf(args=None):
     if not args:
         args = commands.keys()
 
-    for arg in args:
+    for i, arg in enumerate(args):
         if arg in commands:
-            print(f":{arg} - {commands[arg].__doc__.strip()}\n")
+            print(f"{i + 1}. :{arg} - {commands[arg].__doc__.strip()}\n")
     print()
 
 
 def load(args):
     """
-    Load a file. eg :load cool.lc or :load. If no file is given, "definitions.lc" is the default file.
+    Load a file. eg :load cool.lc or :load. "definitions.lc" is the default
     """
     file = "definitions.lc" if not args else args[0]
 
