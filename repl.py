@@ -86,7 +86,7 @@ def serialize(node):
         if node.left.nodetype == NodeType.LAMBDA:
             left = f"({left})"
 
-        if node.right.nodetype == NodeType.LAMBDA:
+        if node.right.nodetype != NodeType.VARIABLE:
             right = f"({right})"
 
         return f"{left} {right}"
