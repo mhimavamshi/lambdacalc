@@ -1,6 +1,6 @@
 import readline
 from tokenizer import tokenize
-from parser import Parser, print_tree
+from parser import Node, NodeType, Parser, print_tree
 from evaluator import Evaluator
 from utils import debug_print
 
@@ -72,10 +72,42 @@ def cleardefines(args):
     clear_definitions()
 
 
+def serialize(node):
+    if node.nodetype == NodeType.VARIABLE:
+        return node.value
+
+    if node.nodetype == NodeType.LAMBDA:
+        return f"\\{node.value}.{serialize(node.right)}"
+
+    if node.nodetype == NodeType.APPLICATION:
+        left = serialize(node.left)
+        right = serialize(node.right)
+
+        if node.left.nodetype == NodeType.LAMBDA:
+            left = f"({left})"
+
+        if node.right.nodetype == NodeType.LAMBDA:
+            right = f"({right})"
+
+        return f"{left} {right}"
+
+
 # needs to serialize and deserialize AST nodes :)
 # maybe later
 def save(args):
-    pass
+    file = "definitions.lc" if not args else args[0]
+
+    lines = []
+    for definition in parsed_definitions:
+        line = f"{definition} = {serialize(parsed_definitions[definition])},"
+        lines.append(line)
+
+    data = "{ " + "\n".join(lines) + " }"
+
+    with open(file, "w") as fl:
+        fl.write(data)
+
+    print(f"written to {file}")
 
 
 def showdefines(args):
@@ -99,7 +131,19 @@ def helpf(args=None):
     print()
 
 
+def load(args):
+    file = "definitions.lc" if not args else args[0]
+
+    with open(file) as fl:
+        data = fl.read()
+
+    new_definition(data)
+
+    print(f"loaded from {file}")
+
+
 commands = {
+    "load": load,
     "def": define,
     "undef": undefine,
     "cleardefs": cleardefines,
