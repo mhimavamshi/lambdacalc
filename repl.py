@@ -13,6 +13,26 @@ parsed_definitions = {}
 evaluator = Evaluator(parsed_definitions)
 
 
+def serialize(node):
+    if node.nodetype == NodeType.VARIABLE:
+        return node.value
+
+    if node.nodetype == NodeType.LAMBDA:
+        return f"\\{node.value}.{serialize(node.right)}"
+
+    if node.nodetype == NodeType.APPLICATION:
+        left = serialize(node.left)
+        right = serialize(node.right)
+
+        if node.left.nodetype == NodeType.LAMBDA:
+            left = f"({left})"
+
+        if node.right.nodetype != NodeType.VARIABLE:
+            right = f"({right})"
+
+        return f"{left} {right}"
+
+
 def new_definition(source):
     global parsed_definitions
     tokens = tokenize(source)
@@ -46,6 +66,9 @@ def evaluate_pipeline(program):
     print("reduced tree: ")
     print_tree(final_tree)
     print()
+    print("=====")
+    print("serialized back: ")
+    print(serialize(final_tree))
 
 
 def define(args):
@@ -70,26 +93,6 @@ def cleardefines(args):
     Clear all definitions.
     """
     clear_definitions()
-
-
-def serialize(node):
-    if node.nodetype == NodeType.VARIABLE:
-        return node.value
-
-    if node.nodetype == NodeType.LAMBDA:
-        return f"\\{node.value}.{serialize(node.right)}"
-
-    if node.nodetype == NodeType.APPLICATION:
-        left = serialize(node.left)
-        right = serialize(node.right)
-
-        if node.left.nodetype == NodeType.LAMBDA:
-            left = f"({left})"
-
-        if node.right.nodetype != NodeType.VARIABLE:
-            right = f"({right})"
-
-        return f"{left} {right}"
 
 
 def save(args):
